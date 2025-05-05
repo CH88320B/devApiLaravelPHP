@@ -7,60 +7,165 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# Web API de Pólizas con Laravel + PHP + SQL Server
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Este repositorio contiene una implementación de una Web API REST para la gestión de pólizas de seguros utilizando **Laravel 10**, **PHP 8.0+**, y **SQL Server** (hospedado en Azure). Se han aplicado buenas prácticas modernas como uso de controladores, modelos, autenticación con Sanctum, y arquitectura MVC.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚀 Tecnologías Usadas
 
-## Learning Laravel
+* **Lenguaje:** PHP 8.0+
+* **Framework:** Laravel 10
+* **Base de Datos:** Azure SQL Server
+* **ORM:** Eloquent
+* **Autenticación:** Laravel Sanctum
+* **Controladores REST:** `PolizaController`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🚧 Instalación y Configuración
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Requisitos previos
 
-## Laravel Sponsors
+* PHP >= 8.0
+* Composer
+* Extensiones PHP para SQL Server:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+  * `pdo_sqlsrv`
+  * `sqlsrv`
 
-### Premium Partners
+### Pasos para instalar
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```bash
+# Clona el repositorio
+https://github.com/CH88320B/TestWebApiPHP.git
+cd TestWebApiPHP
 
-## Contributing
+# Instala dependencias
+composer install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Crea archivo .env
+cp .env.example .env
 
-## Code of Conduct
+# Genera la key de Laravel
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Configura la conexión en `.env`
 
-## Security Vulnerabilities
+```dotenv
+DB_CONNECTION=sqlsrv
+DB_HOST=polizasserverhj2025.database.windows.net
+DB_PORT=1433
+DB_DATABASE=DBPolizas
+DB_USERNAME=admihj
+DB_PASSWORD=Hj@2024!Polizas
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+> Asegúrate de que el servidor acepte conexiones remotas y que el firewall esté configurado.
 
-## License
+### Ejecutar migraciones
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan migrate
+```
+
+---
+
+## 🌐 Endpoints
+
+### Rutas públicas:
+
+```http
+GET     /api/polizas         # Lista todas las pólizas
+```
+
+### Rutas protegidas con Sanctum:
+
+```http
+POST    /api/polizas         # Crear nueva póliza
+GET     /api/polizas/{id}    # Ver detalle
+PUT     /api/polizas/{id}    # Actualizar
+DELETE  /api/polizas/{id}    # Eliminar
+```
+
+---
+
+## 🔐 Autenticación Sanctum
+
+### Instalación Sanctum
+
+```bash
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+```
+
+### Middleware en `app/Http/Kernel.php`
+
+```php
+'api' => [
+    \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+    'throttle:api',
+    \Illuminate\Routing\Middleware\SubstituteBindings::class,
+],
+```
+
+### Rutas con protección
+
+En `routes/api.php`:
+
+```php
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('polizas', PolizaController::class)->except(['index']);
+});
+
+Route::get('polizas', [PolizaController::class, 'index']); // Público
+```
+
+---
+
+## 💻 Estructura del Proyecto
+
+```
+polizas-api/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── PolizaController.php
+│   ├── Models/
+│   │   └── Poliza.php
+├── database/
+│   └── migrations/
+├── routes/
+│   └── api.php
+├── .env
+├── composer.json
+└── README.md
+```
+
+---
+
+## 🚫 Buenas Prácticas Aplicadas
+
+* Separación clara de responsabilidades (MVC).
+* Validación de datos con Form Requests (a implementar).
+* Uso de migraciones para versionado de base de datos.
+* Autenticación basada en tokens segura con Sanctum.
+* Rutas RESTful claras y semánticas.
+
+---
+
+## 🌟 Futuras Mejores
+
+* Validaciones con `FormRequest`
+* Tests unitarios con PHPUnit
+* Documentación OpenAPI con Swagger
+* Despliegue en Azure App Service o Vercel
+
+---
+
+## 📄 Licencia
+
+MIT - Henderson J. Castañeda
