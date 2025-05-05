@@ -58,9 +58,9 @@ php artisan key:generate
 DB_CONNECTION=sqlsrv
 DB_HOST=polizasserver.database.windows.net
 DB_PORT=1433
-DB_DATABASE=
-DB_USERNAME=
-DB_PASSWORD=
+DB_DATABASE=TuBD
+DB_USERNAME=TuUser
+DB_PASSWORD=TuPAss
 ```
 
 > Asegúrate de que el servidor acepte conexiones remotas y que el firewall esté configurado.
