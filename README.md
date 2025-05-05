@@ -56,11 +56,11 @@ php artisan key:generate
 
 ```dotenv
 DB_CONNECTION=sqlsrv
-DB_HOST=polizasserverhj2025.database.windows.net
+DB_HOST=polizasserver.database.windows.net
 DB_PORT=1433
-DB_DATABASE=DBPolizas
-DB_USERNAME=admihj
-DB_PASSWORD=Hj@2024!Polizas
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
 ```
 
 > Asegúrate de que el servidor acepte conexiones remotas y que el firewall esté configurado.
